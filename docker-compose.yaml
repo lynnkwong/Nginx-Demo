@@ -1,0 +1,34 @@
+version: "3.9"
+
+services:
+  nginx:
+    image: nginx:1.23
+    ports:
+      - target: 80
+        published: 80
+      - target: 443
+        published: 443
+    volumes:
+      - type: bind
+        source: ./html
+        target: /var/www/localhost
+      - type: bind
+        source: ./nginx.conf
+        target: /etc/nginx/nginx.conf
+      - type: bind
+        source: ./cert
+        target: /etc/nginx/cert
+    networks:
+      - proxy-net
+    restart: always
+  
+  fastapi:
+    build:
+      context: ./fastapi
+    networks:
+      - proxy-net
+
+networks:
+  proxy-net:
+    driver: bridge
+
